@@ -12,7 +12,13 @@ interface PlayerSelectorProps {
 
 export function PlayerSelector({ team, action, onSelectPlayer, onCancel }: PlayerSelectorProps) {
   return (
-    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-lg">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end">
+      <div className="w-full bg-background rounded-t-3xl border-t border-border/50 animate-in slide-in-from-bottom-full duration-300">
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
+        </div>
+        
       <div className="px-5 py-4 border-b border-border/50 flex items-center justify-between min-h-[60px]">
         <div className="flex items-center space-x-2">
           <span className="text-3xl flex-shrink-0">{action.icon}</span>
@@ -31,9 +37,9 @@ export function PlayerSelector({ team, action, onSelectPlayer, onCancel }: Playe
         </Button>
       </div>
       
-      <div className="p-5">
+        <div className="p-5 max-h-[70vh] overflow-y-auto pb-safe">
         {team.players.length > 0 ? (
-          <div className="grid grid-cols-3 gap-4 max-h-80 overflow-y-auto ios-scroll">
+            <div className="grid grid-cols-4 gap-4 ios-scroll">
             {team.players
               .sort((a, b) => a.number - b.number)
               .map((player) => (
@@ -42,20 +48,14 @@ export function PlayerSelector({ team, action, onSelectPlayer, onCancel }: Playe
                   variant="outline"
                   onClick={() => onSelectPlayer(player.id)}
                   className={cn(
-                    "h-24 rounded-2xl flex flex-col items-center justify-center p-3 touch-target no-select",
+                      "h-16 w-16 rounded-2xl flex items-center justify-center touch-target no-select",
                     "border-2 border-border/50 hover:border-primary/50",
                     "transition-all duration-200 active:scale-[0.95]"
                   )}
                 >
-                  <div 
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-base font-bold text-white mb-2"
-                    style={{ backgroundColor: team.colors.primary }}
-                  >
-                    {player.number}
-                  </div>
-                  <span className="text-sm font-medium text-center leading-tight ios-text-fixed">
-                    {player.name.split(' ')[0]}
-                  </span>
+                    <span className="text-xl font-bold ios-text-fixed">
+                      {player.number}
+                    </span>
                 </Button>
               ))}
           </div>
@@ -67,6 +67,7 @@ export function PlayerSelector({ team, action, onSelectPlayer, onCancel }: Playe
             </p>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

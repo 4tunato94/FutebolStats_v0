@@ -24,6 +24,13 @@ const positions = [
   'Atacante'
 ]
 
+const roles = [
+  'Titular',
+  'Reserva',
+  'Capitão',
+  'Vice-capitão'
+]
+
 export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
   const { updateTeam } = useFutebolStore()
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
@@ -33,7 +40,8 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
   const [playerForm, setPlayerForm] = useState({
     number: '',
     position: 'Goleiro',
-    name: ''
+    name: '',
+    role: 'Titular'
   })
 
   const handleAddPlayer = (e: React.FormEvent) => {
@@ -49,7 +57,8 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
       id: `${team.id}-${playerNumber}`,
       number: playerNumber,
       name: playerForm.name,
-      position: playerForm.position
+      position: playerForm.position,
+      role: playerForm.role
     }
 
     const updatedPlayers = editingPlayer 
@@ -61,7 +70,7 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
   }
 
   const resetPlayerForm = () => {
-    setPlayerForm({ number: '', position: 'Goleiro', name: '' })
+    setPlayerForm({ number: '', position: 'Goleiro', name: '', role: 'Titular' })
     setEditingPlayer(null)
     setIsPlayerDialogOpen(false)
   }
@@ -71,7 +80,8 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
     setPlayerForm({
       number: player.number.toString(),
       position: player.position,
-      name: player.name
+      name: player.name,
+      role: player.role || 'Titular'
     })
     setIsPlayerDialogOpen(true)
   }
@@ -109,15 +119,16 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
                     id="import-text"
                     value={importText}
                     onChange={(e) => setImportText(e.target.value)}
-                    placeholder="1 Lionel Messi Atacante&#10;2 Cristiano Ronaldo Atacante&#10;3 Neymar Junior Meio-campo&#10;..."
+                    placeholder="1,Lionel Messi,Atacante,Titular&#10;2,Cristiano Ronaldo,Atacante,Capitão&#10;3,Neymar Junior,Meio-campo,Titular&#10;..."
                     rows={10}
                     className="font-mono text-sm"
                   />
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  <p>Formato: <code>Número Nome Posição</code></p>
-                  <p>Exemplo: <code>10 Lionel Messi Atacante</code></p>
+                  <p>Formato: <code>Número,Nome,Posição,Função</code></p>
+                  <p>Exemplo: <code>10,Lionel Messi,Atacante,Capitão</code></p>
                   <p>Posições: Goleiro, Zagueiro, Lateral, Volante, Meio-campo, Atacante</p>
+                  <p>Funções: Titular, Reserva, Capitão, Vice-capitão</p>
                 </div>
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" onClick={() => setIsImportDialogOpen(false)}>
@@ -189,6 +200,25 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
                   </Select>
                 </div>
                 
+                <div>
+                  <Label htmlFor="role">Função</Label>
+                  <Select
+                    value={playerForm.role}
+                    onValueChange={(value) => setPlayerForm(prev => ({ ...prev, role: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map(role => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={resetPlayerForm}>
                     Cancelar
@@ -221,7 +251,7 @@ export function PlayerManager({ team, onImportPlayers }: PlayerManagerProps) {
                   </div>
                   <div>
                     <p className="font-medium text-sm">{player.name}</p>
-                    <p className="text-xs text-muted-foreground">{player.position}</p>
+                    <p className="text-xs text-muted-foreground">{player.position} • {player.role}</p>
                   </div>
                 </div>
                 

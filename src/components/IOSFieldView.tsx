@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Maximize2, Play, Pause, RotateCcw } from 'lucide-react'
+import { Maximize2, Play, Pause, RotateCcw, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FieldGrid } from '@/components/FieldGrid'
 import { useFutebolStore } from '@/stores/futebolStore'
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 export function IOSFieldView() {
   const { currentMatch, togglePlayPause, updateTimer } = useFutebolStore()
   const [showControls, setShowControls] = useState(false)
+  const [showActions, setShowActions] = useState(false)
   const [timer, setTimer] = useState(0)
 
   if (!currentMatch) return null
@@ -80,16 +81,13 @@ export function IOSFieldView() {
               currentMatch.currentPossession === currentMatch.teamA.id && 
               "ring-2 ring-primary scale-105 bg-primary/10"
             )}
-            style={{
-              borderColor: currentMatch.teamA.colors.primary,
-              color: currentMatch.teamA.colors.primary
-            }}
             onClick={() => useFutebolStore.getState().setPossession(currentMatch.teamA.id)}
           >
-            <div className="text-center">
-              <div className="font-bold text-base ios-text-fixed">{currentMatch.teamA.name}</div>
-              <div className="text-sm opacity-70 ios-text-fixed">Posse de Bola</div>
-            </div>
+            <img 
+              src={currentMatch.teamA.logoUrl} 
+              alt={`${currentMatch.teamA.name} logo`}
+              className="w-12 h-12 object-contain"
+            />
           </Button>
           
           <Button
@@ -100,16 +98,13 @@ export function IOSFieldView() {
               currentMatch.currentPossession === currentMatch.teamB.id && 
               "ring-2 ring-primary scale-105 bg-primary/10"
             )}
-            style={{
-              borderColor: currentMatch.teamB.colors.primary,
-              color: currentMatch.teamB.colors.primary
-            }}
             onClick={() => useFutebolStore.getState().setPossession(currentMatch.teamB.id)}
           >
-            <div className="text-center">
-              <div className="font-bold text-base ios-text-fixed">{currentMatch.teamB.name}</div>
-              <div className="text-sm opacity-70 ios-text-fixed">Posse de Bola</div>
-            </div>
+            <img 
+              src={currentMatch.teamB.logoUrl} 
+              alt={`${currentMatch.teamB.name} logo`}
+              className="w-12 h-12 object-contain"
+            />
           </Button>
         </div>
       </div>
@@ -118,6 +113,18 @@ export function IOSFieldView() {
       <div className="flex-1 p-5">
         <div className="h-full rounded-2xl overflow-hidden">
           <FieldGrid />
+        </div>
+        
+        {/* Floating Action Button */}
+        <div className="absolute bottom-6 right-6">
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => setShowActions(true)}
+            className="h-16 w-16 rounded-full shadow-lg touch-target"
+          >
+            <Plus className="h-8 w-8" />
+          </Button>
         </div>
       </div>
 
@@ -128,7 +135,18 @@ export function IOSFieldView() {
         title="Controles do Jogo"
       >
         <div className="p-5">
-          <ActionPanel />
+          <ActionPanel onClose={() => setShowControls(false)} />
+        </div>
+      </IOSActionSheet>
+      
+      {/* Actions Sheet */}
+      <IOSActionSheet
+        isOpen={showActions}
+        onClose={() => setShowActions(false)}
+        title="Registrar Ação"
+      >
+        <div className="p-5">
+          <ActionPanel onClose={() => setShowActions(false)} />
         </div>
       </IOSActionSheet>
     </div>

@@ -77,12 +77,6 @@ const Index = () => {
             </IOSCard>
           )}
           
-          {activeTab === 'stats' && currentMatch && (
-            <IOSCard title="Estatísticas" icon={<BarChart3 className="h-5 w-5 text-primary" />}>
-              <StatsHeatMapTabs game={currentMatch} />
-            </IOSCard>
-          )}
-          
           {activeTab === 'history' && (
             <IOSCard title="Histórico de Jogos" icon={<History className="h-5 w-5 text-primary" />}>
               <GameHistory />

@@ -18,7 +18,8 @@ export function ActionTypeManager() {
     icon: '⚽',
     requiresPlayer: true,
     counterAction: 'none',
-    reverseAction: false
+    reverseAction: false,
+    changesPossession: false
   })
   const [editingActionId, setEditingActionId] = useState<string | null>(null)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -51,7 +52,8 @@ export function ActionTypeManager() {
         icon: actionForm.icon,
         requiresPlayer: actionForm.requiresPlayer,
         counterAction: actionForm.counterAction === 'none' ? undefined : actionForm.counterAction || undefined,
-        reverseAction: actionForm.reverseAction
+        reverseAction: actionForm.reverseAction,
+        changesPossession: actionForm.changesPossession
       })
       setEditingActionId(null)
     } else {
@@ -61,13 +63,14 @@ export function ActionTypeManager() {
         icon: actionForm.icon,
         requiresPlayer: actionForm.requiresPlayer,
         counterAction: actionForm.counterAction === 'none' ? undefined : actionForm.counterAction || undefined,
-        reverseAction: actionForm.reverseAction
+        reverseAction: actionForm.reverseAction,
+        changesPossession: actionForm.changesPossession
       }
       
       addActionType(newActionType)
     }
     
-    setActionForm({ name: '', icon: '⚽', requiresPlayer: true, counterAction: 'none', reverseAction: false })
+    setActionForm({ name: '', icon: '⚽', requiresPlayer: true, counterAction: 'none', reverseAction: false, changesPossession: false })
   }
 
   const handleEditAction = (actionType: ActionType) => {
@@ -76,7 +79,8 @@ export function ActionTypeManager() {
       icon: actionType.icon,
       requiresPlayer: actionType.requiresPlayer,
       counterAction: actionType.counterAction || 'none',
-      reverseAction: actionType.reverseAction || false
+      reverseAction: actionType.reverseAction || false,
+      changesPossession: actionType.changesPossession || false
     })
     setEditingActionId(actionType.id)
   }
@@ -122,6 +126,15 @@ export function ActionTypeManager() {
                   </Button>
                 </div>
                 
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="changes-possession"
+                    checked={actionForm.changesPossession}
+                    onCheckedChange={(checked) => setActionForm(prev => ({ ...prev, changesPossession: checked }))}
+                  />
+                  <Label htmlFor="changes-possession">Muda posse automaticamente</Label>
+                </div>
+                
                 {showEmojiPicker && (
                   <div className="border rounded-lg p-4 bg-background max-h-96 overflow-y-auto">
                     <div className="space-y-4">
@@ -147,6 +160,9 @@ export function ActionTypeManager() {
                           </div>
                         </div>
                       ))}
+                       {actionType.changesPossession && (
+                         <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">Muda Posse</span>
+                       )}
                     </div>
                   </div>
                 )}

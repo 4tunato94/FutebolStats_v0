@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import { Target, Grid3X3 } from 'lucide-react'
+import { Target, Grid3X3, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useFutebolStore } from '@/stores/futebolStore'
 import { ActionType } from '@/types/futebol'
 import { PlayerSelector } from './PlayerSelector'
 import { cn } from '@/lib/utils'
 
-export function ActionPanel() {
+interface ActionPanelProps {
+  onClose?: () => void
+}
+
+export function ActionPanel({ onClose }: ActionPanelProps) {
   const { currentMatch, actionTypes, addAction } = useFutebolStore()
   const [selectedAction, setSelectedAction] = useState<ActionType | null>(null)
 
@@ -52,6 +56,11 @@ export function ActionPanel() {
           })
         }
       }
+      
+      // Se a ação muda a posse automaticamente, fechar o painel
+      if (actionType.changesPossession && onClose) {
+        onClose()
+      }
     }
   }
 
@@ -90,6 +99,11 @@ export function ActionPanel() {
       }
       
       setSelectedAction(null)
+      
+      // Se a ação muda a posse automaticamente, fechar o painel
+      if (selectedAction.changesPossession && onClose) {
+        onClose()
+      }
     }
   }
 
@@ -113,13 +127,33 @@ export function ActionPanel() {
   const teamForPlayerSelection = getTeamForPlayerSelection()
 
   return (
-    <div className="space-y-4">
+    <>
+      <div className="space-y-4">
+        {onClose && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Grid3X3 className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold text-lg ios-text-fixed">Ações Específicas</h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-10 w-10 rounded-full touch-target"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
+        
       {currentMatch.currentPossession ? (
         <div className="space-y-4">
-          <div className="flex items-center space-x-3 mb-4">
+          {!onClose && (
+            <div className="flex items-center space-x-3 mb-4">
             <Grid3X3 className="h-5 w-5 text-primary" />
             <h3 className="font-semibold text-lg ios-text-fixed">Ações Específicas</h3>
           </div>
+          )}
           
           <div className="grid grid-cols-2 gap-4">
             {actionTypes.map((actionType) => (
@@ -150,6 +184,7 @@ export function ActionPanel() {
           </p>
         </div>
       )}
+      </div>
 
       {/* Seletor de Jogador */}
       {selectedAction && teamForPlayerSelection && (
@@ -160,6 +195,6 @@ export function ActionPanel() {
           onCancel={() => setSelectedAction(null)}
         />
       )}
-    </div>
+    </>
   )
 }

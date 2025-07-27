@@ -24,6 +24,11 @@ export function TeamManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    if (!formData.logoFile && !formData.logoUrl) {
+      alert('O logo do time é obrigatório!')
+      return
+    }
+    
     let logoUrl = formData.logoUrl
     
     // Se há um arquivo de logo, converter para base64
@@ -87,29 +92,34 @@ export function TeamManager() {
   const handleImportPlayers = (teamId: string, text: string) => {
     const lines = text.split('\n').filter(line => line.trim())
     const players: Player[] = lines.map((line, index) => {
-      const parts = line.trim().split(/\s+/)
+      const parts = line.trim().split(',').map(part => part.trim())
       
-      if (parts.length < 3) {
-        // Formato antigo: apenas número e nome
+      if (parts.length < 4) {
+        // Formato incompleto, usar valores padrão
         const number = parseInt(parts[0]) || (index + 1)
-        const name = parts.slice(1).join(' ') || `Jogador ${number}`
+        const name = parts[1] || `Jogador ${number}`
+        const position = parts[2] || 'Campo'
+        const role = parts[3] || 'Titular'
         return {
           id: `${teamId}-${number}`,
           number,
           name,
-          position: 'Campo'
+          position,
+          role
         }
       } else {
-        // Formato novo: número, nome, posição
+        // Formato completo: número, nome, posição, função
         const number = parseInt(parts[0]) || (index + 1)
-        const position = parts[parts.length - 1] // Última palavra é a posição
-        const name = parts.slice(1, -1).join(' ') || `Jogador ${number}` // Palavras do meio são o nome
+        const name = parts[1] || `Jogador ${number}`
+        const position = parts[2] || 'Campo'
+        const role = parts[3] || 'Titular'
         
         return {
           id: `${teamId}-${number}`,
           number,
           name,
-          position
+          position,
+          role
         }
       }
     })
@@ -147,7 +157,7 @@ export function TeamManager() {
               </div>
 
               <div>
-                <Label htmlFor="logoFile">Escudo do Time</Label>
+                <Label htmlFor="logoFile">Escudo do Time *</Label>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Input
@@ -258,21 +268,10 @@ export function TeamManager() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
-                  {team.logoUrl ? (
-                    <img 
-                      src={team.logoUrl} 
-                      alt={`${team.name} logo`}
-                      className="w-8 h-8 object-contain rounded"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement
-                        target.style.display = 'none'
-                        target.nextElementSibling?.classList.remove('hidden')
-                      }}
-                    />
-                  ) : null}
-                  <div 
-                    className={`w-4 h-4 rounded-full ${team.logoUrl ? 'hidden' : ''}`}
-                    style={{ backgroundColor: team.colors.primary }}
+                  <img 
+                    src={team.logoUrl} 
+                    alt={`${team.name} logo`}
+                    className="w-8 h-8 object-contain rounded"
                   />
                   <span>{team.name}</span>
                 </CardTitle>

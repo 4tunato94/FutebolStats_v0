@@ -3,13 +3,14 @@ export interface Player {
   number: number
   name: string
   position: string
+  role: string
 }
 
 export interface Team {
   id: string
   name: string
   logo?: string
-  logoUrl?: string
+  logoUrl: string
   colors: {
     primary: string
     secondary: string
@@ -45,6 +46,7 @@ export interface ActionType {
   icon: string
   counterAction?: string // ID da ação que deve ser registrada no time adversário
   reverseAction?: boolean // Se true, registra a ação no time adversário ao invés do time com posse
+  changesPossession?: boolean // Se true, muda automaticamente a posse para o time adversário
 }
 
 export interface ZoneStats {

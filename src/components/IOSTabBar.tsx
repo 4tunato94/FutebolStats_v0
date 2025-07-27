@@ -12,7 +12,6 @@ const tabs = [
   { id: 'setup', label: 'Início', icon: Home },
   { id: 'teams', label: 'Times', icon: Users },
   { id: 'actions', label: 'Ações', icon: Zap },
-  { id: 'stats', label: 'Stats', icon: BarChart3 },
   { id: 'history', label: 'Histórico', icon: History },
 ]
 

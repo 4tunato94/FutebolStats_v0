@@ -46,13 +46,13 @@ interface FutebolState {
 const defaultActionTypes: ActionType[] = [
   { id: '1', name: 'Chute no Alvo', requiresPlayer: true, icon: '⚽' },
   { id: '2', name: 'Chute Fora do Alvo', requiresPlayer: true, icon: '🥅' },
-  { id: '3', name: 'Falta Cometida', requiresPlayer: true, icon: '🟨', counterAction: '14' },
+  { id: '3', name: 'Falta Cometida', requiresPlayer: true, icon: '🟨', counterAction: '14', changesPossession: true },
   { id: '4', name: 'Cartão Amarelo', requiresPlayer: true, icon: '🟨' },
   { id: '5', name: 'Cartão Vermelho', requiresPlayer: true, icon: '🟥' },
   { id: '6', name: 'Cartão Vermelho Direto', requiresPlayer: true, icon: '🔴' },
-  { id: '7', name: 'Escanteio', requiresPlayer: true, icon: '🏁' },
-  { id: '8', name: 'Impedimento', requiresPlayer: true, icon: '🚩' },
-  { id: '9', name: 'Lateral', requiresPlayer: true, icon: '↔️' },
+  { id: '7', name: 'Escanteio', requiresPlayer: true, icon: '🏁', changesPossession: true },
+  { id: '8', name: 'Impedimento', requiresPlayer: true, icon: '🚩', changesPossession: true },
+  { id: '9', name: 'Lateral', requiresPlayer: true, icon: '↔️', changesPossession: true },
   { id: '10', name: 'Desarme', requiresPlayer: true, icon: '🦵' },
   { id: '11', name: 'Chute Bloqueado', requiresPlayer: true, icon: '🛡️' },
   { id: '12', name: 'Gol Contra', requiresPlayer: true, icon: '😵', reverseAction: true },
@@ -235,10 +235,19 @@ export const useFutebolStore = create<FutebolState>()(
         }
         
         const actions = [newAction]
+        let newPossession = state.currentMatch.currentPossession
         
         // Se a ação tem uma contra-ação, adicionar automaticamente
         if (action.type === 'specific' && action.actionName) {
           const actionType = state.actionTypes.find(at => at.name === action.actionName)
+          
+          // Verificar se a ação muda a posse automaticamente
+          if (actionType?.changesPossession && state.currentMatch.currentPossession) {
+            newPossession = state.currentMatch.currentPossession === state.currentMatch.teamA.id 
+              ? state.currentMatch.teamB.id 
+              : state.currentMatch.teamA.id
+          }
+          
           if (actionType?.counterAction) {
             const counterActionType = state.actionTypes.find(at => at.id === actionType.counterAction)
             if (counterActionType) {
@@ -262,7 +271,8 @@ export const useFutebolStore = create<FutebolState>()(
         return {
           currentMatch: {
             ...state.currentMatch,
-            actions: [...state.currentMatch.actions, ...actions]
+            actions: [...state.currentMatch.actions, ...actions],
+            currentPossession: newPossession
           }
         }
       }),
